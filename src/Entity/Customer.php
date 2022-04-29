@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Customer
+ * @ORM\Entity
  * @UniqueEntity(fields={"siret"}, message="Il existe déjà un client avec ce siret")
  * @UniqueEntity(fields={"name"}, message="Il existe déjà un client avec ce nom")
  */

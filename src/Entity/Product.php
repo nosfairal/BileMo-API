@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Product
+ * @ORM\Entity
  * @UniqueEntity(fields={"name"}, message="Il existe déjà un produit avec ce nom")
  */
 
@@ -15,6 +16,7 @@ class Product
 {
      /**
      * @var int
+     * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
