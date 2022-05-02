@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * Class User
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"userName"}, message="Il existe déjà un membre avec ce pseudonyme")
  */
 
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @var int
@@ -177,23 +178,14 @@ class User implements UserInterface
     }
 
     /**
-     * Get the value of password
-     *
-     * @return  string
-     */ 
-    public function getPassword()
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    /**
-     * Set the value of password
-     *
-     * @param  string  $password
-     *
-     * @return  self
-     */ 
-    public function setPassword(string $password)
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
