@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Product
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=ProductRepository::class)
  * @UniqueEntity(fields={"name"}, message="Il existe déjà un produit avec ce nom")
  */
 
@@ -19,6 +21,7 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("get");
      */
     private int $id;
 
@@ -27,35 +30,41 @@ class Product
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(message="You must provide a product name")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
+     * @Groups("get");
      */
     private string $name;
 
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
+     * @Groups("get");
      */
     private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups("get");
      */
     private $description;
 
     /**
      * @var float
      * @ORM\Column(type="float")
+     * @Groups("get");
      */
     private float $price;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("get");
      */
     private string $color;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
+     * @Groups("get");
      */
     private string $brand;  
 
