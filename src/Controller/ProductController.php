@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use JsonException;
 use App\Repository\ProductRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,8 +34,11 @@ class ProductController extends AbstractController
      * @return JsonResponse
      * @param Product $product
      */
-    public function details(Product $product, SerializerInterface $serializer): JsonResponse
+    public function details(Product $product/*=null*/, SerializerInterface $serializer): JsonResponse
     {   
+        /*if (!$product || !($product instanceof Product)) {
+            throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
+        }*/
         return new JsonResponse(
             $serializer->serialize($product, "json", ["groups" => "get"]),
             JsonResponse::HTTP_OK, [], true

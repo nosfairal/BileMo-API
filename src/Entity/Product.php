@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Product
+ * @package App\Entity
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  * @UniqueEntity(fields={"name"}, message="Il existe déjà un produit avec ce nom")
  */
@@ -28,7 +29,7 @@ class Product
     /**
      * @var string
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\NotBlank(message="You must provide a product name")
+     * @Assert\NotBlank(message="Vous devez fournir un nom au produit")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
      * @Groups("get");
      */
