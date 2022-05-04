@@ -4,3 +4,11 @@
 
 api_login_check:
   path: /api/login_check
+
+users_list:
+  path: /api/users
+  controller: App\Controller\UserController::list
+
+users_create:
+  path: /api/users/create
+  controller: App\Controller\UserController::create
