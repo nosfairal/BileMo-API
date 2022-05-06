@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Assert\NotBlank(message="username property can not be empty")
+     * @Assert\NotBlank(message="username property can not be empty, françois")
      * @Assert\Length(min=3, minMessage="username property must contain at least {{ limit }} characters")
      * @Groups("users:list");
      */

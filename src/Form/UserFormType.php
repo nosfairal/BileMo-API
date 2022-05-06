@@ -2,9 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Customer;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class UserFormType extends AbstractType
 {
@@ -22,19 +24,12 @@ class UserFormType extends AbstractType
     {
         $builder
         ->add('email', EmailType::class, [
-            new NotBlank([
-                'message' => "This field can't be empty",
-            ]),
+            'constraints' => [
+            new NotNull()]
         ])
         ->add('userName', TextType::class,  [
-            'attr' => [
-                'class' => 'form-control'
-            ],
-            'label' => 'Votre pseudonyme :*',
             'constraints' => [
-                new NotBlank([
-                    'message' => "This field can't be empty",
-                ]),
+                new NotNull(),
                 new Length([
                     'min' => 3,
                     'minMessage' => 'Your username must have at least {{ limit }} characters',
@@ -44,13 +39,20 @@ class UserFormType extends AbstractType
                 ]),
             ],
         ])
-        ->add('plainPassword', PasswordType::class, [
+        ->add('firstName', TextType::class, [
+            'required' => true,
+        ])
+        ->add('lastName', TextType::class, [
+            'required' => true,
+ 
+        ])
+        ->add('customer', EntityType::class, [ 
+            'class' => Customer::class,
+        ])
+        ->add('password', PasswordType::class, [
             // instead of being set onto the object directly,
             // this is read and encoded in the controller
-            'mapped' => false,
-            'attr' => [
-                'autocomplete' => 'new-password'
-            ],
+
             'constraints' => [
                 new NotBlank([
                     'message' => "This field can't be empty",
@@ -70,6 +72,7 @@ class UserFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'csrf_protection' => false
         ]);
     }
 }
