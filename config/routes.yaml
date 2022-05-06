@@ -4,3 +4,27 @@
 
 api_login_check:
   path: /api/login_check
+
+users_list:
+  path: /api/users
+  controller: App\Controller\UserController::list
+
+users_create:
+  path: /api/users/create
+  controller: App\Controller\UserController::create
+
+users_delete:
+  path: /api/customers/{customerId}/user/{userId}
+  controller: App\Controller\UserController::delete
+  methods: [DELETE]
+  requirements:
+    customerId: '\d+'
+    userId: '\d+'
+
+users_update:
+  path: /api/customers/{customerId}/user/{userId}
+  controller: App\Controller\UserController::update
+  methods: [PATCH]
+  requirements:
+    customerId: '\d+'
+    userId: '\d+'

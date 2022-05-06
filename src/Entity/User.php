@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
@@ -22,14 +23,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("users:list");
      */
     private int $id;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Assert\NotBlank(message="username property can not be empty")
+     * @Assert\NotBlank(message="username property can not be empty, françois")
      * @Assert\Length(min=3, minMessage="username property must contain at least {{ limit }} characters")
+     * @Groups("users:list");
      */
     private string $userName;
 
@@ -49,6 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a first name")
+     * @Groups("users:list");
      */
     private string $firstName;
 
@@ -56,6 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a last name")
+     * @Groups("users:list");
      */
     private string $lastName;
 
@@ -70,6 +75,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank(message="A user has to be related to a customer")
+     * @Groups("users:list");
      */
     private $customer;
     

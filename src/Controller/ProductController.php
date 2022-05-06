@@ -44,9 +44,9 @@ class ProductController extends AbstractController
      */
     public function details(Product $product/*=null*/, SerializerInterface $serializer): JsonResponse
     {   
-        /*if (!$product || !($product instanceof Product)) {
+        if (!$product || !($product instanceof Product)) {
             throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
-        }*/
+        }
         return new JsonResponse(
             $serializer->serialize($product, "json", ["groups" => "get"]),
             JsonResponse::HTTP_OK, [], true
