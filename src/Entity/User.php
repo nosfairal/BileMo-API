@@ -33,6 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank(message="username property can not be empty, françois")
      * @Assert\Length(min=3, minMessage="username property must contain at least {{ limit }} characters")
      * @Groups("users:list");
+     * @Groups("users:details");
      */
     private string $userName;
 
@@ -53,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a first name")
      * @Groups("users:list");
+     * @Groups("users:details");
      */
     private string $firstName;
 
@@ -61,6 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a last name")
      * @Groups("users:list");
+     * @Groups("users:details");
      */
     private string $lastName;
 
@@ -68,6 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\Email(message="The email you provide is not a valid email address")
+     * @Groups("users:details");
      */
     private string $email;
 
@@ -76,6 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank(message="A user has to be related to a customer")
      * @Groups("users:list");
+     * @Groups("users:details");
      */
     private $customer;
     

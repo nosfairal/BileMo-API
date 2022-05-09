@@ -32,6 +32,7 @@ class Product
      * @Assert\NotBlank(message="Vous devez fournir un nom au produit")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
      * @Groups("get");
+     * @Groups("product:details");
      */
     private string $name;
 

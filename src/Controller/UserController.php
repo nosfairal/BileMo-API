@@ -10,6 +10,7 @@ use App\Form\UserFormType;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use Error;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +20,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends AbstractApiController
 {
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, SerializerInterface $serializer)
+    {
+        $this->userPasswordHasher = $userPasswordHasher;
+        $this->serializer = $serializer;
+    }
+    
     /**
-     * @Route("/users", name="users_list")
+     * @Route("/customers/{customerId}/users", name="users_list")
      */
     public function list(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {   
@@ -35,7 +42,33 @@ class UserController extends AbstractApiController
         );
     }
 
-    public function create( SerializerInterface $serializer, UserRepository $userRepository, EntityManagerInterface $entityManager, Request $request)
+    /**
+     * @Route("/customers/{customerId}/users/{userId}/details", name="users_details", methods={"GET"})
+     * @return JsonResponse
+     * @param User $user
+     */
+    public function details(UserRepository $userRepository, Request $request)
+    {   
+        $customerId = $request->get('customerId');
+        $userId = $request->get('userId');
+        $user = $userRepository->findOneBy([
+            'id' => $userId,
+            'customer' => $customerId
+
+        ]);
+        if (!$user) {
+            return $this->respond("This user doesn't exist", Response::HTTP_BAD_REQUEST);
+            //throw new NotFoundHttpException("The user was not found");
+        }
+        
+        return new JsonResponse(
+            $this->serializer->serialize($user,"json", ["groups" => "users:details"]),
+            JsonResponse::HTTP_OK, [], true
+        );
+
+    }
+
+    public function create(EntityManagerInterface $entityManager, Request $request)
     {
         $form =$this->buildForm(UserFormType::class);
         $form->handleRequest($request);
@@ -49,10 +82,12 @@ class UserController extends AbstractApiController
         /** @var User $user */
         
         $user = $form->getData();
+        //$user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
+        $user->setCustomer($this->getUser()->getCustomer());
         $user->setRoles(["ROLE_USER"]);
-        $customer = $this->getUser()->getCustomer();
         //dd($customer);
-        $user->setCustomer($customer);
+       
         
 
         $entityManager->persist($user);
@@ -60,7 +95,7 @@ class UserController extends AbstractApiController
 
         //return $this->View($user, 201);}
         return new JsonResponse(
-            $serializer->serialize("User bien crée","json"),
+            $this->serializer->serialize("User created!","json"),
             207, [], true
         );
         }else{

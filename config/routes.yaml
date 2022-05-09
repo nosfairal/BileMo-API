@@ -6,11 +6,22 @@ api_login_check:
   path: /api/login_check
 
 users_list:
-  path: /api/users
+  path: /api/customers/{customerId}/users
   controller: App\Controller\UserController::list
+  methods: [GET]
+  requirements:
+    customerId: '\d+'
+
+users_details:
+  path: /api/customers/{customerId}/users/{userId}/details
+  controller: App\Controller\UserController::details
+  methods: [GET]
+  requirements:
+    customerId: '\d+'
+    userId: '\d+'
 
 users_create:
-  path: /api/users/create
+  path: /api/customers/{customerId}/users/create
   controller: App\Controller\UserController::create
 
 users_delete:
