@@ -5,12 +5,19 @@
 api_login_check:
   path: /api/login_check
 
+products_list:
+  path: /api/products
+  controller: App\Controller\ProductController::list
+  methods: [GET]
+
+
 users_list:
   path: /api/customers/{customerId}/users
   controller: App\Controller\UserController::list
   methods: [GET]
   requirements:
     customerId: '\d+'
+
 
 users_details:
   path: /api/customers/{customerId}/users/{userId}/details
