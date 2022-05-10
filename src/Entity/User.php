@@ -80,7 +80,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank(message="A user has to be related to a customer")
      * @Groups("users:list");
-     * @Groups("users:details");
      */
     private $customer;
     

@@ -7,6 +7,7 @@ use App\Repository\ProductRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * Class Product
@@ -22,7 +23,7 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("get");
+     * @Groups("products:list");
      */
     private int $id;
 
@@ -31,48 +32,54 @@ class Product
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(message="Vous devez fournir un nom au produit")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
-     * @Groups("get");
+     * @Groups("products:list");
      * @Groups("product:details");
+     * @Serializer\Groups({"products:list", "product:details"})
      */
     private string $name;
 
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
-     * @Groups("get");
+     * @Groups("products:list");
      */
     private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups("get");
+     * @Groups("products:list");
+     * @Groups("product:details");
      */
     private $description;
 
     /**
      * @var float
      * @ORM\Column(type="float")
-     * @Groups("get");
+     * @Groups("products:list");
+     * @Groups("product:details");
      */
     private float $price;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("get");
+     * @Groups("products:list");
+     * @Groups("product:details");
      */
     private string $color;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
-     * @Groups("get");
+     * @Groups("products:list");
+     * @Groups("product:details");
      */
     private string $brand;  
 
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Groups("product:details");
      */
     private int $availableQuantity;
 
