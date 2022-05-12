@@ -7,23 +7,23 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class PaginatedCollection
 {
     /**
-     * @Serializer\Groups({"products_list", "users_list"})
+     * @Serializer\Groups({"products:list", "users_list"})
      */
     private $items;
     /**
-     * @Serializer\Groups({"products_list", "users_list"})
+     * @Serializer\Groups({"products:list", "users_list"})
      */
     private $total;
     /**
-     * @Serializer\Groups({"products_list", "users_list"})
+     * @Serializer\Groups({"products:list", "users_list"})
      */
     private $count;
     /**
-     * @Serializer\Groups({"products_list", "users_list"})
+     * @Serializer\Groups({"products:list", "users_list"})
      */
     private $page;
     /**
-     * @Serializer\Groups({"products_list", "users_list"})
+     * @Serializer\Groups({"products:list", "users_list"})
      */
     private $_links = [];
 

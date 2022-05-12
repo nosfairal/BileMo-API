@@ -43,9 +43,11 @@ class ProductFixtures extends Fixture
                 ->setAvailableQuantity($faker->randomFloat(0, 0, 100))
                 ->setBrand($faker->randomElement($brands));
 
-            // About 30% of the products have a color
+            // About 70% of the products have a color
             if ($faker->boolean(70)) {
                 $product->setColor($faker->randomElement($colors));
+            }else{
+                $product->setColor("");
             }
             // About 80% of the products have a description
             if ($faker->boolean(80)) {

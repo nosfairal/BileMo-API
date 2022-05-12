@@ -119,7 +119,7 @@ class UserController extends AbstractApiController
             'id' => $userId
         ]);
         if(!$user){
-            throw new NotFoundHttpException("This user doesn't exit");
+            return $this->respond("This user doesn't exit",Response::HTTP_NOT_FOUND);
         }
         $entityManager->remove($user);
         $entityManager->flush();
@@ -134,12 +134,16 @@ class UserController extends AbstractApiController
             'id' => $customerId
         ]);
         if(!$customer){
-            throw new NotFoundHttpException("This customer doesn't exit");
+            return $this->respond("This customer doesn't exit",Response::HTTP_NOT_FOUND);
         }
+        
         $user = $userRepository->findOneBy([
             'customer' => $customerId,
             'id' => $userId
         ]);
+        if(!$user){
+            return $this->respond("This user doesn't exit",Response::HTTP_NOT_FOUND);
+        }
         $form= $this->buildForm(UserFormType::class, $user, [
             'method' => $request->getMethod()
         ]);
@@ -152,7 +156,7 @@ class UserController extends AbstractApiController
         $entityManager->flush();
         return new JsonResponse(
             $serializer->serialize("User updated","json"),
-            207, [], true
+            202, [], true
         );
         //return $this->respond($user);
     }

@@ -8,12 +8,30 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * Class Product
  * @package App\Entity
  * @ORM\Entity(repositoryClass=ProductRepository::class)
- * @UniqueEntity(fields={"name"}, message="Il existe déjà un produit avec ce nom")
+ * @UniqueEntity(fields={"name"}, message="This name already exists")
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "product_details",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups={"products:list"}),
+ * )
+ * @Hateoas\Relation(
+ *     "products:list",
+ *     href = @Hateoas\Route(
+ *          "products_list",
+ *          absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups={"product:details"}),
+ * )
  */
 
 class Product
@@ -23,14 +41,13 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("products:list");
      */
     private int $id;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\NotBlank(message="Vous devez fournir un nom au produit")
+     * @Assert\NotBlank(message="You have to name the product")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
      * @Groups("products:list");
      * @Groups("product:details");
@@ -41,7 +58,7 @@ class Product
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
-     * @Groups("products:list");
+     * @Groups("products_list");
      */
     private \DateTimeImmutable $createdAt;
 

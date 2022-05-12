@@ -6,6 +6,8 @@ use App\Entity\Product;
 use JsonException;
 use App\Repository\ProductRepository;
 use App\Service\PaginationFactory;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -15,6 +17,8 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\SerializerInterface;
+//use JMS\Serializer\SerializerInterface;
+//use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,6 +42,8 @@ class ProductController extends AbstractApiController
     }
     /**
      * @Route(name="products_list", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @Cache(maxage="1 hour", public=true)
      * @OA\Get(summary="Get list of BileMo products")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -50,11 +56,22 @@ class ProductController extends AbstractApiController
 
         $paginatedCollection = $paginationFactory->createCollection($query, $request, 'products_list', [], 5);
         //\dd($paginatedCollection);
+
         /*return new JsonResponse(
             $this->serializer->serialize($paginatedCollection,'json',["groups" =>"products:list"]),
             JsonResponse::HTTP_OK, [], true
         );*/
         return $this->respond($paginatedCollection,Response::HTTP_OK);
+        /*$productsJson = $this->serializer->serialize(
+            $paginatedCollection,
+            'json',
+            SerializationContext::create()->setGroups(['products:list'])
+        );
+        \dd($productsJson);
+
+        $response = new Response($productsJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+
+        return $response;*/
       
 
         /*return new JsonResponse(
@@ -64,14 +81,25 @@ class ProductController extends AbstractApiController
     }
 
     /**
-     * @Route("/{id}", name="api_products_details", methods={"GET"})
-     * @return JsonResponse
+     * @Route("/{id}", name="product_details", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @OA\Response(
+     *   response=200,
+     *   description="Returns the products details",
+     *   @Model(type=Product::class, groups={"product:details"})
+     * )
+     * @Cache(maxage="1 hour", public=true)
      * @param Product $product
      */
-    public function details(Product $product): JsonResponse
-    {   
-        if (!$product || !($product instanceof Product)) {
-            throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
+    public function details(Product $product=null, Request $request)
+    {       
+        $id = $request->get('id');
+        $product = $this->productRepository->findOneBy([
+            'id' => $id
+        ]);
+        if (!$product /*|| ($product instanceof Product)*/) {
+            //throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
+            return $this->respond("Incorrect identifier or no product found with this identifier", Response::HTTP_NOT_FOUND);
         }
         return new JsonResponse(
             $this->serializer->serialize($product, "json", ["groups" => "product:details"]),

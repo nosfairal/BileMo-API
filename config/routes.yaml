@@ -40,7 +40,7 @@ users_delete:
     userId: '\d+'
 
 users_update:
-  path: /api/customers/{customerId}/user/{userId}
+  path: /api/customers/{customerId}/users/{userId}
   controller: App\Controller\UserController::update
   methods: [PATCH]
   requirements:
