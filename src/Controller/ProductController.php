@@ -84,11 +84,17 @@ class ProductController extends AbstractApiController
     /**
      * @Route("/{id}", name="product_details", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @OA\Get(summary="Get details of a product")
      * @OA\Response(
-     *   response=200,
-     *   description="Returns the products details",
-     *   @Model(type=Product::class, groups={"product:details"})
+     *     response=JsonResponse::HTTP_OK,
+     *     description="Returns a product",
+     *     @Model(type=Product::class, groups={"product:details"})
      * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NOT_FOUND,
+     *     description="Product not found"
+     * )
+     * @OA\Tag(name="Products")
      * @Cache(maxage="1 hour", public=true)
      * @param Product $product
      */
