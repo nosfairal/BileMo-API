@@ -14,12 +14,15 @@ use App\Form\UserFormType;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use Error;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends AbstractApiController
@@ -33,6 +36,11 @@ class UserController extends AbstractApiController
     
     /**
      * @Route("/customers/{customerId}/users", name="users_list")
+     * @OA\Get(summary="Get list of your organization's users")
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_OK,
+     *     description="Returns the list of your users"
+     * )
      */
     public function list(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {   
@@ -49,6 +57,20 @@ class UserController extends AbstractApiController
 
     /**
      * @Route("/customers/{customerId}/users/{userId}/details", name="users_details", methods={"GET"})
+     * @OA\Get(summary="Get details of a user")
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_OK,
+     *     description="Returns a user"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_UNAUTHORIZED,
+     *     description="Unauthorized request"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NOT_FOUND,
+     *     description="User not found"
+     * )
+     * @OA\Tag(name="Users")
      * @return JsonResponse
      * @param User $user
      */
@@ -73,6 +95,58 @@ class UserController extends AbstractApiController
 
     }
 
+    /**
+     * @Route("/api/customers/{customerId}/user/create", name="user_create", methods={"POST"})
+     * @OA\Post(summary="Add a new user for your organization")
+     * @OA\RequestBody(
+     *     description="The new user to create",
+     *     required=true,
+     *     @OA\MediaType(
+     *         mediaType="application/Json",
+     *         @OA\Schema(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="userName",
+     *                 description="UserName for user identification",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="password",
+     *                 description="User's choosen password",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="first_name",
+     *                 description="User's first name",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="last_name",
+     *                 description="User's last name",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 description="User's email address",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_CREATED,
+     *     description="Create a user and returns it"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_BAD_REQUEST,
+     *     description="Bad Json syntax or incorrect data"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_UNAUTHORIZED,
+     *     description="Unauthorized request"
+     * )
+     * @OA\Tag(name="Users")
+     */
     public function create(EntityManagerInterface $entityManager, Request $request)
     {   
         
@@ -119,6 +193,23 @@ class UserController extends AbstractApiController
 
     }
 
+    /**
+     * @Route("/api/customers/{customerId}/user/{userId}", name="delete_user", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")@OA\Delete(summary="Delete a user")
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NO_CONTENT,
+     *     description="Delete a user"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_UNAUTHORIZED,
+     *     description="Unauthorized request"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NOT_FOUND,
+     *     description="User not found"
+     * )
+     * @OA\Tag(name="Users")
+     */
     public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, Request $request) :Response
     {
         $userId = $request->get('userId');
@@ -132,9 +223,67 @@ class UserController extends AbstractApiController
         }
         $entityManager->remove($user);
         $entityManager->flush();
-        return $this->respond('User delete successfully');
+        return new JsonResponse(
+            null,
+            JsonResponse::HTTP_NO_CONTENT
+        );
     }
 
+    /**
+     * @Route("/api/customers/{customerId}/user/{userId}", name="user_update", methods={"PATCH"})
+     * @OA\Patch(summary="Update a user")
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_OK,
+     *     description="Update a user and returns it"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_BAD_REQUEST,
+     *     description="Bad Json syntax or incorrect data"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_UNAUTHORIZED,
+     *     description="Unauthorized request"
+     * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NOT_FOUND,
+     *     description="User not found"
+     * )
+     * @OA\RequestBody(
+     *     description="The user data you want to update.If you don't want to change a field don't mention it",
+     *     @OA\MediaType(
+     *         mediaType="application/Json",
+     *         @OA\Schema(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="userName",
+     *                 description="User's userName",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="password",
+     *                 description="User's choosen password",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="first_name",
+     *                 description="User's first name",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="last_name",
+     *                 description="User's last name",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 description="User's email address",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     * @OA\Tag(name="Users")
+     */
     public function update(SerializerInterface $serializer, UserRepository $userRepository, EntityManagerInterface $entityManager, CustomerRepository $customerRepository, Request $request) :Response
     {
         $userId = $request->get('userId');
