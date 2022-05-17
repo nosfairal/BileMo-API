@@ -11,7 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormInterface as FormFormInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
@@ -23,6 +26,7 @@ class UserFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+
         ->add('email', EmailType::class, [
             'constraints' => [
             new NotNull()]
@@ -46,9 +50,6 @@ class UserFormType extends AbstractType
             'required' => true,
  
         ])
-        ->add('customer', EntityType::class, [ 
-            'class' => Customer::class,
-        ])
         ->add('password', PasswordType::class, [
             // instead of being set onto the object directly,
             // this is read and encoded in the controller
@@ -65,6 +66,21 @@ class UserFormType extends AbstractType
                 ]),
             ],
         ])
+        /*->add('customer', EntityType::class, [
+            'class' => Customer::class,
+            'value' => 2
+
+        ])*/
+        /*->add('customer', EntityType::class, [
+            'class' => Customer::class,
+            'getter' => function (User $user, FormInterface $form):object {
+                return $form->getUserData()->getCustomer();
+            },
+            'setter' => function (User &$user, ?object $customer, FormInterface $form): void {
+                $user->setCustomer($customer);
+            },
+        ])*/
+
     ;
     }
 
@@ -72,7 +88,12 @@ class UserFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'csrf_protection' => false
+            'csrf_protection' => false,
+            /*'empty_data' => function (FormFormInterface $form) {
+                return new User(
+                    $form->get('customer')->getData()
+                );
+            },*/
         ]);
     }
 }

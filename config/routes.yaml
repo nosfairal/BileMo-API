@@ -27,9 +27,10 @@ users_details:
     customerId: '\d+'
     userId: '\d+'
 
-users_create:
-  path: /api/customers/{customerId}/users/create
+user_create:
+  path: /api/customers/{customerId}/user/create
   controller: App\Controller\UserController::create
+  methods: [POST]
 
 users_delete:
   path: /api/customers/{customerId}/user/{userId}

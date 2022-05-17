@@ -47,7 +47,8 @@ class ProductController extends AbstractApiController
      * @OA\Get(summary="Get list of BileMo products")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
-     *     description="Returns the list of products"
+     *     description="Returns the list of products",
+     *     @Model(type=Product::class, groups={"products:list"})
      * )
      */
     public function list(Request $request, PaginationFactory $paginationFactory)/*:Response*/
@@ -57,17 +58,17 @@ class ProductController extends AbstractApiController
         $paginatedCollection = $paginationFactory->createCollection($query, $request, 'products_list', [], 5);
         //\dd($paginatedCollection);
 
-        /*return new JsonResponse(
+        return new JsonResponse(
             $this->serializer->serialize($paginatedCollection,'json',["groups" =>"products:list"]),
             JsonResponse::HTTP_OK, [], true
-        );*/
-        return $this->respond($paginatedCollection,Response::HTTP_OK);
+        );
+        //return $this->respond($paginatedCollection,Response::HTTP_OK);
         /*$productsJson = $this->serializer->serialize(
             $paginatedCollection,
             'json',
-            SerializationContext::create()->setGroups(['products:list'])
+            ["groups" => 'products:list']
         );
-        \dd($productsJson);
+        //\dd($productsJson);
 
         $response = new Response($productsJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
 

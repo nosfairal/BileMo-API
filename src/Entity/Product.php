@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProductRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+//use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
@@ -41,6 +41,7 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"products:list", "product:details"})
      */
     private int $id;
 
@@ -49,8 +50,6 @@ class Product
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(message="You have to name the product")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
-     * @Groups("products:list");
-     * @Groups("product:details");
      * @Serializer\Groups({"products:list", "product:details"})
      */
     private string $name;
@@ -58,45 +57,44 @@ class Product
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
-     * @Groups("products_list");
+     * @Serializer\Groups("product:details");
      */
     private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups("products:list");
-     * @Groups("product:details");
+     * @Serializer\Groups("product:details");
      */
     private $description;
 
     /**
      * @var float
      * @ORM\Column(type="float")
-     * @Groups("products:list");
-     * @Groups("product:details");
+     * @Serializer\Groups("products:list");
+     * @Serializer\Groups("product:details");
      */
     private float $price;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("products:list");
-     * @Groups("product:details");
+     * @Serializer\Groups("products:list");
+     * @Serializer\Groups("product:details");
      */
     private string $color;
     
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
-     * @Groups("products:list");
-     * @Groups("product:details");
+     * @Serializer\Groups("products:list");
+     * @Serializer\Groups("product:details");
      */
     private string $brand;  
 
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Groups("product:details");
+     * @Serializer\Groups("product:details");
      */
     private int $availableQuantity;
 
