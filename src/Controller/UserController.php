@@ -35,7 +35,7 @@ class UserController extends AbstractApiController
     }
     
     /**
-     * @Route("/customers/{customerId}/users", name="users_list")
+     * @Route("/users", name="users_list")
      * @OA\Get(summary="Get list of your organization's users")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -56,7 +56,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/customers/{customerId}/users/{userId}/details", name="users_details", methods={"GET"})
+     * @Route("/users/{userId}", name="users_details", methods={"GET"})
      * @OA\Get(summary="Get details of a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -76,13 +76,16 @@ class UserController extends AbstractApiController
      */
     public function details(UserRepository $userRepository, Request $request)
     {   
-        $customerId = $request->get('customerId');
         $userId = $request->get('userId');
         $user = $userRepository->findOneBy([
-            'id' => $userId,
-            'customer' => $customerId
-
+            'id' => $userId
         ]);
+        $customer = $this->getUser()->getCustomer();
+
+        if ($user->getCustomer()->getId() !== $customer->getId()) {
+            return $this->respond("You don't have the rights to see this user's details", Response::HTTP_FORBIDDEN);
+        }
+
         if (!$user) {
             return $this->respond("This user doesn't exist", Response::HTTP_NOT_FOUND);
             //throw new NotFoundHttpException("The user was not found");
@@ -96,7 +99,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/api/customers/{customerId}/user/create", name="user_create", methods={"POST"})
+     * @Route("/api/user/create", name="user_create", methods={"POST"})
      * @OA\Post(summary="Add a new user for your organization")
      * @OA\RequestBody(
      *     description="The new user to create",
@@ -150,16 +153,16 @@ class UserController extends AbstractApiController
     public function create(EntityManagerInterface $entityManager, Request $request)
     {   
         
-        //$form =$this->buildForm(UserFormType::class);
-        //$form->handleRequest($request);
+        $form =$this->buildForm(UserFormType::class);
+        $form->handleRequest($request);
         
-        //if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()){
 
         
         /** @var User $user */
         
-        //$user = $form->getData();
-        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $user = $form->getData();
+        /*$user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         /*if ($errorMessages = $this->getValidationErrors($user)) {
             return $this->throwValidationErrors($user);
         }*/
@@ -170,10 +173,10 @@ class UserController extends AbstractApiController
         //dd($customer);
        
         //$customer->addUser($user);
-        $errors = $this->validateUser($user);
+        /*$errors = $this->validateUser($user);
             if ($errors) {
                 return $errors;
-            }
+            }*/
         $entityManager->persist($user);
         $entityManager->flush();
  
@@ -182,8 +185,8 @@ class UserController extends AbstractApiController
             $this->serializer->serialize("User created!","json"),
             201, [], true
         );
-    //}
-    //return $this->respond($form, Response::HTTP_BAD_REQUEST);
+    }
+    return $this->respond($form, Response::HTTP_BAD_REQUEST);
         /*catch(Error $e) {
             return new JsonResponse(
                 $serializer->serialize($e->getMessage(),"json"),
@@ -194,7 +197,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/api/customers/{customerId}/user/{userId}", name="delete_user", methods={"DELETE"})
+     * @Route("/api/user/{userId}", name="user_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")@OA\Delete(summary="Delete a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_NO_CONTENT,
@@ -213,7 +216,7 @@ class UserController extends AbstractApiController
     public function delete(EntityManagerInterface $entityManager, UserRepository $userRepository, Request $request) :Response
     {
         $userId = $request->get('userId');
-        $customerId = $request->get('customerId');
+        $customerId = $this->getUser()->getCustomer()->getId();
         $user = $userRepository->findOneBy([
             'customer' => $customerId,
             'id' => $userId
@@ -230,7 +233,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/api/customers/{customerId}/user/{userId}", name="user_update", methods={"PATCH"})
+     * @Route("/api/user/{userId}", name="user_update", methods={"PATCH"})
      * @OA\Patch(summary="Update a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -287,7 +290,7 @@ class UserController extends AbstractApiController
     public function update(SerializerInterface $serializer, UserRepository $userRepository, EntityManagerInterface $entityManager, CustomerRepository $customerRepository, Request $request) :Response
     {
         $userId = $request->get('userId');
-        $customerId = $request->get('customerId');
+        $customerId = $this->getUser()->getCustomer()->getId();
         $customer = $customerRepository->findOneBy([
             'id' => $customerId
         ]);
@@ -306,16 +309,18 @@ class UserController extends AbstractApiController
             'method' => $request->getMethod()
         ]);
         $form->handleRequest($request);
-        if (!$form->isSubmitted() && !$form->isValid()){
-        }
+        if ($form->isSubmitted() && $form->isValid()){
+            
 
-        $user = $form->getData();
-        $entityManager->persist($user);
-        $entityManager->flush();
-        return new JsonResponse(
-            $serializer->serialize("User updated","json"),
-            202, [], true
-        );
+            $user = $form->getData();
+            $entityManager->persist($user);
+            $entityManager->flush();
+            return new JsonResponse(
+                $serializer->serialize("User updated","json"),
+                202, [], true
+            );
+        }
+        return $this->respond($form, Response::HTTP_BAD_REQUEST);
         //return $this->respond($user);
     }
 

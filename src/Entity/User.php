@@ -31,8 +31,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Assert\NotBlank(message="username property can not be empty, françois")
-     * @Assert\Length(min=3, minMessage="username property must contain at least {{ limit }} characters")
+     * @Assert\NotBlank(message="username property can not be empty")
+     * @Assert\Length(min=3, minMessage="UserName property must contain at least {{ limit }} characters")
      * @Serializer\Groups("users:list");
      * @Serializer\Groups("user:details");
      */
@@ -46,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @var string The hashed password
+     * @Assert\Length(min=6, minMessage="Password property must contain at least {{ limit }} characters")
      * @ORM\Column(type="string")
      */
     private string $password;
@@ -79,7 +80,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank(message="A user has to be related to a customer")
      */
     private $customer;
     

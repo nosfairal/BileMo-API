@@ -12,28 +12,25 @@ products_list:
 
 
 users_list:
-  path: /api/customers/{customerId}/users
+  path: /api/users
   controller: App\Controller\UserController::list
   methods: [GET]
-  requirements:
-    customerId: '\d+'
 
 
 users_details:
-  path: /api/customers/{customerId}/users/{userId}/details
+  path: /api/users/{userId}
   controller: App\Controller\UserController::details
   methods: [GET]
   requirements:
-    customerId: '\d+'
     userId: '\d+'
 
 user_create:
-  path: /api/customers/{customerId}/user/create
+  path: /api/user/create
   controller: App\Controller\UserController::create
   methods: [POST]
 
-users_delete:
-  path: /api/customers/{customerId}/user/{userId}
+user_delete:
+  path: /api/user/{userId}
   controller: App\Controller\UserController::delete
   methods: [DELETE]
   requirements:
@@ -41,9 +38,8 @@ users_delete:
     userId: '\d+'
 
 user_update:
-  path: /api/customers/{customerId}/user/{userId}
+  path: /api/user/{userId}
   controller: App\Controller\UserController::update
   methods: [PATCH]
   requirements:
-    customerId: '\d+'
     userId: '\d+'
