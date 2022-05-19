@@ -177,6 +177,9 @@ class UserController extends AbstractApiController
             if ($errors) {
                 return $errors;
             }*/
+        if (!$this->isGranted("ROLE_ADMIN", $user)) {
+            return $this->respond("Vous n'êtes pas autorisé à effectuer cette requête",Response::HTTP_UNAUTHORIZED);
+        }
         $entityManager->persist($user);
         $entityManager->flush();
  
@@ -198,7 +201,7 @@ class UserController extends AbstractApiController
 
     /**
      * @Route("/api/user/{userId}", name="user_delete", methods={"DELETE"})
-     * @IsGranted("ROLE_USER")@OA\Delete(summary="Delete a user")
+     * @OA\Delete(summary="Delete a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_NO_CONTENT,
      *     description="Delete a user"
@@ -223,6 +226,13 @@ class UserController extends AbstractApiController
         ]);
         if(!$user){
             return $this->respond("This user doesn't exit",Response::HTTP_NOT_FOUND);
+        }
+        // if user can't be deleted by the current user
+        if (!$this->isGranted("ROLE_ADMIN", $user)) {
+            return $this->json([
+                'status' => JsonResponse::HTTP_UNAUTHORIZED,
+                'message' => "Vous n'êtes pas autorisé à effectuer cette requête"
+            ], JsonResponse::HTTP_NOT_FOUND);
         }
         $entityManager->remove($user);
         $entityManager->flush();
@@ -308,6 +318,9 @@ class UserController extends AbstractApiController
         $form= $this->buildForm(UserFormType::class, $user, [
             'method' => $request->getMethod()
         ]);
+        if (!$this->isGranted("ROLE_ADMIN", $user)) {
+            return $this->respond("Vous n'êtes pas autorisé à effectuer cette requête",Response::HTTP_UNAUTHORIZED);
+        }
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
             
