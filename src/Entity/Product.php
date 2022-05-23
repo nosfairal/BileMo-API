@@ -9,6 +9,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 /**
  * Class Product
@@ -41,6 +43,7 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @OA\Property(description= "The unique identifier of the product")
      * @Serializer\Groups({"products:list", "product:details"})
      */
     private int $id;
@@ -50,6 +53,7 @@ class Product
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank(message="You have to name the product")
      * @Assert\Length(min=3, minMessage="The name must contain at least {{ limit }} characters")
+     * @OA\Property(type="string", maxLength=255, description="The unique name of the product")
      * @Serializer\Groups({"products:list", "product:details"})
      */
     private string $name;
@@ -57,12 +61,14 @@ class Product
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
+     * @OA\Property(description= "The creation's date of the product")
      * @Serializer\Groups("product:details");
      */
     private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @OA\Property(description= "A description of the product")
      * @Serializer\Groups("product:details");
      */
     private $description;
@@ -70,6 +76,7 @@ class Product
     /**
      * @var float
      * @ORM\Column(type="float")
+     * @OA\Property(description= "The price of the product")
      * @Serializer\Groups("products:list");
      * @Serializer\Groups("product:details");
      */
@@ -78,6 +85,7 @@ class Product
     /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @OA\Property(type="string", maxLength=255, description= "The color of the product")
      * @Serializer\Groups("products:list");
      * @Serializer\Groups("product:details");
      */
@@ -86,6 +94,7 @@ class Product
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
+     * @OA\Property(type="string", maxLength=255, description= "The brand of the product")
      * @Serializer\Groups("products:list");
      * @Serializer\Groups("product:details");
      */
@@ -94,6 +103,7 @@ class Product
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @OA\Property(type="integer", description= "The available quantity of the product")
      * @Serializer\Groups("product:details");
      */
     private int $availableQuantity;

@@ -41,6 +41,7 @@ class UserController extends AbstractApiController
      *     response=JsonResponse::HTTP_OK,
      *     description="Returns the list of your users"
      * )
+     * @OA\Tag(name="Users")
      */
     public function list(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {   
@@ -60,7 +61,8 @@ class UserController extends AbstractApiController
      * @OA\Get(summary="Get details of a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
-     *     description="Returns a user"
+     *     description="Returns a user",
+     *     @Model(type=User::class)
      * )
      * @OA\Response(
      *     response=JsonResponse::HTTP_UNAUTHORIZED,
@@ -211,6 +213,10 @@ class UserController extends AbstractApiController
      *     description="Unauthorized request"
      * )
      * @OA\Response(
+     *     response=JsonResponse::HTTP_FORBIDDEN,
+     *     description="You can't delete yourself"
+     * )
+     * @OA\Response(
      *     response=JsonResponse::HTTP_NOT_FOUND,
      *     description="User not found"
      * )
@@ -224,15 +230,17 @@ class UserController extends AbstractApiController
             'customer' => $customerId,
             'id' => $userId
         ]);
+        $currentUserId = $this->getUser()->getId();
+        //dd($userId);
+        if($currentUserId == $userId){
+            return $this->respond("You can't delete yourself", Response::HTTP_FORBIDDEN);
+        }
         if(!$user){
-            return $this->respond("This user doesn't exit",Response::HTTP_NOT_FOUND);
+            return $this->respond("This user doesn't exit", Response::HTTP_NOT_FOUND);
         }
         // if user can't be deleted by the current user
         if (!$this->isGranted("ROLE_ADMIN", $user)) {
-            return $this->json([
-                'status' => JsonResponse::HTTP_UNAUTHORIZED,
-                'message' => "Vous n'êtes pas autorisé à effectuer cette requête"
-            ], JsonResponse::HTTP_NOT_FOUND);
+            return $this->respond("You don't have the rights to delete a user", Response::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);
         $entityManager->flush();

@@ -48,8 +48,19 @@ class ProductController extends AbstractApiController
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
      *     description="Returns the list of products",
-     *     @Model(type=Product::class, groups={"products:list"})
+     *     @Model(type=Product::class),
+     *      @OA\Property(
+     *              property="_links",
+     * @OA\Items(
+     *                  type="object",
+     * @OA\Property(property="next",                         type="string"),
+     * @OA\Property(property="first",                        type="string"),
+     * @OA\Property(property="last",                         type="string"),
+     * @OA\Property(property="previous",                     type="string")
+     *              )
+     *           )
      * )
+     * @OA\Tag(name="Products")
      */
     public function list(Request $request, PaginationFactory $paginationFactory)/*:Response*/
     {
@@ -87,13 +98,19 @@ class ProductController extends AbstractApiController
      * @OA\Get(summary="Get details of a product")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
-     *     description="Returns a product",
-     *     @Model(type=Product::class, groups={"product:details"})
+     *     description="Returns a product"
      * )
      * @OA\Response(
      *     response=JsonResponse::HTTP_NOT_FOUND,
      *     description="Product not found"
      * )
+     * @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="Unique identifier of the product",
+     *          required=true,
+     *          example=4,
+     *      )
      * @OA\Tag(name="Products")
      * @Cache(maxage="1 hour", public=true)
      * @param Product $product
