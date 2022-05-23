@@ -117,9 +117,9 @@ class ProductController extends AbstractApiController
      */
     public function details(Product $product=null, Request $request)
     {       
-        $id = $request->get('id');
+        $productId = $request->get('id');
         $product = $this->productRepository->findOneBy([
-            'id' => $id
+            'id' => $productId
         ]);
         if (!$product /*|| ($product instanceof Product)*/) {
             //throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
