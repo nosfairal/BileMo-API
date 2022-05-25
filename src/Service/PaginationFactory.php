@@ -20,7 +20,7 @@ class PaginationFactory
 
     public function createCollection(QueryBuilder $query, Request $request, $route, array $routeParams = [], int $maxPerPage = 10): PaginatedCollection
     {
-        $page = (int) $request->query->get('page', 1);
+        $page = (int) $request->query->get('page');
 
         $adapter = new QueryAdapter($query, false);
         $pagerfanta = new Pagerfanta($adapter);

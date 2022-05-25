@@ -34,6 +34,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
  *     ),
  *     exclusion = @Hateoas\Exclusion(groups={"product:details"}),
  * )
+ * @OA\Schema()
  */
 
 class Product
@@ -61,7 +62,7 @@ class Product
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
-     * @OA\Property(description= "The creation's date of the product")
+     * @OA\Property(type="string", format="date-time", description= "The creation's date of the product")
      * @Serializer\Groups("product:details");
      */
     private \DateTimeImmutable $createdAt;
@@ -76,7 +77,7 @@ class Product
     /**
      * @var float
      * @ORM\Column(type="float")
-     * @OA\Property(description= "The price of the product")
+     * @OA\Property(description= "The price of the product", nullable=false)
      * @Serializer\Groups("products:list");
      * @Serializer\Groups("product:details");
      */

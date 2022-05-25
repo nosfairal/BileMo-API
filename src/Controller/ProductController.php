@@ -48,18 +48,14 @@ class ProductController extends AbstractApiController
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
      *     description="Returns the list of products",
-     *     @Model(type=Product::class),
-     *      @OA\Property(
-     *              property="_links",
-     * @OA\Items(
-     *                  type="object",
-     * @OA\Property(property="next",                         type="string"),
-     * @OA\Property(property="first",                        type="string"),
-     * @OA\Property(property="last",                         type="string"),
-     * @OA\Property(property="previous",                     type="string")
-     *              )
-     *           )
+     *     @Model(type=Product::class)
      * )
+     * @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="Number of the page you want to see",
+     *          example=4,
+     *      )
      * @OA\Tag(name="Products")
      */
     public function list(Request $request, PaginationFactory $paginationFactory)/*:Response*/
