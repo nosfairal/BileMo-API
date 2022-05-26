@@ -15,6 +15,7 @@ This is the seventh project of the formation Application Developer - PHP / Symfo
     -   Configure environment variables
     -   Install the project
     -   Create the database
+    -   Become an administrator
 
 3.  Documentation
 
@@ -98,16 +99,17 @@ Else follow this steps:
 
 Your database should be updated with contents.
 
-**Registration and become administrator**
+**Become an administrator**
 
 
-1.  Go to your database, table user, and at your line change the "roles" field from [] to ["ROLE_ADMIN"].
+1.  Go to your database, table user, and  change the "roles" field from ["ROLE_USER"] to ["ROLE_ADMIN"].
+2.  Your password is defined in the [UserFixtures.php.](https://github.com/nosfairal/BileMo-API/blob/main/src/DataFixtures/UserFixtures.php)
 
-You are now administrator of your website and can manage it.
+You are now administrator of this API and can manage it.
 
 ## Documentation
 
-There are 2 available documentation formats:
+There are 2 availables documentation formats:
 
     . Json documentation: /api/doc.json
     . Html interactive documentation: /api/doc
