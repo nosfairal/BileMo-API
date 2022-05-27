@@ -13,6 +13,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Form\UserFormType;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
+use App\Service\PaginationFactory;
 use Error;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -41,17 +42,23 @@ class UserController extends AbstractApiController
      *     response=JsonResponse::HTTP_OK,
      *     description="Returns the list of your users"
      * )
+     * @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="Number of the page you want to see",
+     *          example=4,
+     *      )
      * @OA\Tag(name="Users")
      */
-    public function list(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function list(UserRepository $userRepository, SerializerInterface $serializer, PaginationFactory $paginationFactory, Request $request): JsonResponse
     {   
         // GET only users related to the same customer as the current authenticated user
         /* @var Customer */
         $customer = $this->getUser()->getCustomer();
-        $users =  $userRepository->findByCustomer($customer->getId());
-        //\dd($users);
+        $query=  $userRepository->findByCustomerQueryBuilder($customer);
+        $paginatedCollection = $paginationFactory->createCollection($query, $request, 'users_list', [],3);
         return new JsonResponse(
-            $serializer->serialize($users,"json", ["groups" => "users:list"]),
+            $serializer->serialize($paginatedCollection,"json", ["groups" => "users:list"]),
             JsonResponse::HTTP_OK, [], true
         );
     }
