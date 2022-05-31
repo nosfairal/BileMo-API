@@ -48,7 +48,7 @@ class UserController extends AbstractApiController
      *          name="page",
      *          in="query",
      *          description="Number of the page you want to see",
-     *          example=4,
+     *          example=1,
      *      )
      * @OA\Tag(name="Users")
      * @Cache(maxage="1 hour", public=true)
@@ -69,6 +69,13 @@ class UserController extends AbstractApiController
     /**
      * @Route("/users/{userId}", name="user_details", methods={"GET"})
      * @OA\Get(summary="Get details of a user")
+     * @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          description="Unique identifier of the user",
+     *          required=true,
+     *          example=1,
+     *      )
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
      *     description="Returns a user",
@@ -83,6 +90,7 @@ class UserController extends AbstractApiController
      *     description="User not found"
      * )
      * @OA\Tag(name="Users")
+     * @Cache(maxage="1 hour", public=true)
      * @return JsonResponse
      * @param User $user
      */
@@ -217,6 +225,13 @@ class UserController extends AbstractApiController
     /**
      * @Route("/api/users/{userId}", name="user_delete", methods={"DELETE"})
      * @OA\Delete(summary="Delete a user")
+     * @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          description="Unique identifier of the user",
+     *          required=true,
+     *          example=1,
+     *      )
      * @OA\Response(
      *     response=JsonResponse::HTTP_NO_CONTENT,
      *     description="Delete a user"
@@ -266,6 +281,13 @@ class UserController extends AbstractApiController
     /**
      * @Route("/api/users/{userId}", name="user_update", methods={"PATCH"})
      * @OA\Patch(summary="Update a user")
+     * @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          description="Unique identifier of the user",
+     *          required=true,
+     *          example=1,
+     *      )
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
      *     description="Update a user and returns it"
