@@ -2,30 +2,30 @@
 
 namespace App\Service;
 
-use Symfony\Component\Serializer\Annotation as Serializer;
+use JMS\Serializer\Annotation as Serializer;
 
 class PaginatedCollection
 {
     /**
      * @Serializer\Groups({"products:list", "users:list"})
      */
-    public $items;
+    private $items;
     /**
      * @Serializer\Groups({"products:list", "users:list"})
      */
-    public $total;
+    private $total;
     /**
      * @Serializer\Groups({"products:list", "users:list"})
      */
-    public $count;
+    private $count;
     /**
      * @Serializer\Groups({"products:list", "users:list"})
      */
-    public $page;
+    private $page;
     /**
      * @Serializer\Groups({"products:list", "users:list"})
      */
-    public $_links = [];
+    private $_links = [];
 
     public function __construct($items, $total, $page)
     {

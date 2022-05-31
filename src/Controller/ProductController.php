@@ -16,9 +16,8 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\Get;
-use Symfony\Component\Serializer\SerializerInterface;
-//use JMS\Serializer\SerializerInterface;
-//use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -65,19 +64,23 @@ class ProductController extends AbstractApiController
         $paginatedCollection = $paginationFactory->createCollection($query, $request, 'products_list', [], 5);
         //\dd($paginatedCollection);
 
-        return new JsonResponse(
+        /*return new JsonResponse(
             $this->serializer->serialize($paginatedCollection,'json',["groups" =>"products:list"]),
             JsonResponse::HTTP_OK, [], true
-        );
+        );*/
         //return $this->respond($paginatedCollection,Response::HTTP_OK);
         /*$productsJson = $this->serializer->serialize(
             $paginatedCollection,
             'json',
             ["groups" => 'products:list']
-        );
+        );*/
+        //$context = SerializationContext::create()->setGroups(array("product:list"));
+        $jsonData = $this->serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(['products:list']));
+
+        return new JsonResponse($jsonData, JsonResponse::HTTP_OK, [], true);
         //\dd($productsJson);
 
-        $response = new Response($productsJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
+        /*$response = new Response($productsJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
 
         return $response;*/
       
@@ -121,9 +124,15 @@ class ProductController extends AbstractApiController
             //throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
             return $this->respond("Incorrect identifier or no product found with this identifier", Response::HTTP_NOT_FOUND);
         }
-        return new JsonResponse(
-            $this->serializer->serialize($product, "json", ["groups" => "product:details"]),
+        /*return new JsonResponse(
+            $this->serializer->serialize($product, "json", SerializationContext::create()->setGroups(
+                ['product:details'])
+            ),
             JsonResponse::HTTP_OK, [], true
-        );
+        );*/
+        $context = SerializationContext::create()->setGroups(array("product:details"));
+        $jsonData = $this->serializer->serialize($product, 'json', $context);
+
+        return new Response($jsonData, Response::HTTP_OK, [], true);
     }
 }

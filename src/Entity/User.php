@@ -6,8 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-//use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
+use OpenApi\Annotations as OA;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
@@ -15,6 +16,39 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  * @ORM\Entity
  * @UniqueEntity(fields={"email"}, message="Il existe déjà un compte avec cette adresse mail")
  * @UniqueEntity(fields={"userName"}, message="Il existe déjà un membre avec ce pseudonyme")
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "user_details",
+ *          parameters = { "userId" = "expr(object.getId())" },
+ *          absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups={"users:list"}),
+ * )
+ * @Hateoas\Relation(
+ *     "users_list",
+ *     href = @Hateoas\Route(
+ *          "users_list",
+ *          absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups={"user:details"}),
+ * )
+ * @Hateoas\Relation(
+ *      "user_update",
+ *      href = @Hateoas\Route(
+ *          "user_update",
+ *          parameters = { "userId" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "user_delete",
+ *          parameters = { "userId" = "expr(object.getId())" },
+ *          absolute = true
+ *      )
+ * )
  */
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -24,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Groups("users:list");
+     * @Groups({"users:list", "user:details"});
      */
     private int $id;
 
@@ -33,8 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=50, unique=true)
      * @Assert\NotBlank(message="username property can not be empty")
      * @Assert\Length(min=3, minMessage="UserName property must contain at least {{ limit }} characters")
-     * @Serializer\Groups("users:list");
-     * @Serializer\Groups("user:details");
+     * @Groups({"users:list", "user:details"});
      */
     private string $userName;
 
@@ -55,8 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a first name")
-     * @Serializer\Groups("users:list");
-     * @Serializer\Groups("user:details");
+     * @Groups({"user:details"});
      */
     private string $firstName;
 
@@ -64,8 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="You must provide a last name")
-     * @Serializer\Groups("users:list");
-     * @Serializer\Groups("user:details");
+     * @Groups({"user:details"});
      */
     private string $lastName;
 
@@ -73,7 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\Email(message="The email you provide is not a valid email address")
-     * @Serializer\Groups("user:details");
+     * @Groups({"user:details"});
      */
     private string $email;
 

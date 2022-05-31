@@ -17,7 +17,7 @@ users_list:
   methods: [GET]
 
 
-users_details:
+user_details:
   path: /api/users/{userId}
   controller: App\Controller\UserController::details
   methods: [GET]
@@ -25,12 +25,12 @@ users_details:
     userId: '\d+'
 
 user_create:
-  path: /api/user/create
+  path: /api/users
   controller: App\Controller\UserController::create
   methods: [POST]
 
 user_delete:
-  path: /api/user/{userId}
+  path: /api/users/{userId}
   controller: App\Controller\UserController::delete
   methods: [DELETE]
   requirements:
@@ -38,7 +38,7 @@ user_delete:
     userId: '\d+'
 
 user_update:
-  path: /api/user/{userId}
+  path: /api/users/{userId}
   controller: App\Controller\UserController::update
   methods: [PATCH]
   requirements:

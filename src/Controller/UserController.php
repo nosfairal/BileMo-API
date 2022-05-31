@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\User;
 use JsonException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use App\Service\ExceptionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,9 +17,10 @@ use App\Repository\UserRepository;
 use App\Service\PaginationFactory;
 use Error;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +51,7 @@ class UserController extends AbstractApiController
      *          example=4,
      *      )
      * @OA\Tag(name="Users")
+     * @Cache(maxage="1 hour", public=true)
      */
     public function list(UserRepository $userRepository, SerializerInterface $serializer, PaginationFactory $paginationFactory, Request $request): JsonResponse
     {   
@@ -58,13 +61,13 @@ class UserController extends AbstractApiController
         $query=  $userRepository->findByCustomerQueryBuilder($customer);
         $paginatedCollection = $paginationFactory->createCollection($query, $request, 'users_list', [],3);
         return new JsonResponse(
-            $serializer->serialize($paginatedCollection,"json", ["groups" => "users:list"]),
+            $serializer->serialize($paginatedCollection,"json", SerializationContext::create()->setGroups(['users:list'])),
             JsonResponse::HTTP_OK, [], true
         );
     }
 
     /**
-     * @Route("/users/{userId}", name="users_details", methods={"GET"})
+     * @Route("/users/{userId}", name="user_details", methods={"GET"})
      * @OA\Get(summary="Get details of a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -101,14 +104,14 @@ class UserController extends AbstractApiController
         }
         
         return new JsonResponse(
-            $this->serializer->serialize($user,"json", ["groups" => "user:details"]),
+            $this->serializer->serialize($user,"json", SerializationContext::create()->setGroups(['user:details'])),
             JsonResponse::HTTP_OK, [], true
         );
 
     }
 
     /**
-     * @Route("/api/user/create", name="user_create", methods={"POST"})
+     * @Route("/api/users", name="user_create", methods={"POST"})
      * @OA\Post(summary="Add a new user for your organization")
      * @OA\RequestBody(
      *     description="The new user to create",
@@ -198,6 +201,9 @@ class UserController extends AbstractApiController
             201, [], true
         );
     }
+    if (!$form){
+        return $this->respond("Vous devez fournir des informations",Response::HTTP_BAD_REQUEST);
+    }
     return $this->respond($form, Response::HTTP_BAD_REQUEST);
         /*catch(Error $e) {
             return new JsonResponse(
@@ -209,7 +215,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/api/user/{userId}", name="user_delete", methods={"DELETE"})
+     * @Route("/api/users/{userId}", name="user_delete", methods={"DELETE"})
      * @OA\Delete(summary="Delete a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_NO_CONTENT,
@@ -258,7 +264,7 @@ class UserController extends AbstractApiController
     }
 
     /**
-     * @Route("/api/user/{userId}", name="user_update", methods={"PATCH"})
+     * @Route("/api/users/{userId}", name="user_update", methods={"PATCH"})
      * @OA\Patch(summary="Update a user")
      * @OA\Response(
      *     response=JsonResponse::HTTP_OK,
@@ -348,6 +354,7 @@ class UserController extends AbstractApiController
                 202, [], true
             );
         }
+
         return $this->respond($form, Response::HTTP_BAD_REQUEST);
         //return $this->respond($user);
     }
