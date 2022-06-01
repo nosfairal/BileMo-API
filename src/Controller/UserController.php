@@ -139,12 +139,12 @@ class UserController extends AbstractApiController
      *                 type="string"
      *             ),
      *             @OA\Property(
-     *                 property="first_name",
+     *                 property="firstName",
      *                 description="User's first name",
      *                 type="string"
      *             ),
      *             @OA\Property(
-     *                 property="last_name",
+     *                 property="lastName",
      *                 description="User's last name",
      *                 type="string"
      *             ),
@@ -321,12 +321,12 @@ class UserController extends AbstractApiController
      *                 type="string"
      *             ),
      *             @OA\Property(
-     *                 property="first_name",
+     *                 property="firstName",
      *                 description="User's first name",
      *                 type="string"
      *             ),
      *             @OA\Property(
-     *                 property="last_name",
+     *                 property="lastName",
      *                 description="User's last name",
      *                 type="string"
      *             ),

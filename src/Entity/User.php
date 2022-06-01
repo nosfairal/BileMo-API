@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  * @UniqueEntity(fields={"email"}, message="Il existe déjà un compte avec cette adresse mail")
  * @UniqueEntity(fields={"userName"}, message="Il existe déjà un membre avec ce pseudonyme")
  * @Hateoas\Relation(
- *     "self",
+ *     "get",
  *     href = @Hateoas\Route(
  *          "user_details",
  *          parameters = { "userId" = "expr(object.getId())" },
@@ -34,12 +34,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *     exclusion = @Hateoas\Exclusion(groups={"user:details"}),
  * )
  * @Hateoas\Relation(
- *      "user_update",
+ *      "patch",
  *      href = @Hateoas\Route(
  *          "user_update",
  *          parameters = { "userId" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups={"user:details"},{"users:list"}),
  * )
  * @Hateoas\Relation(
  *      "delete",
@@ -47,7 +48,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *          "user_delete",
  *          parameters = { "userId" = "expr(object.getId())" },
  *          absolute = true
- *      )
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups={"user:details"},{"users:list"}),
  * )
  */
 
