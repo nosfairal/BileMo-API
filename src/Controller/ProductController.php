@@ -57,13 +57,18 @@ class ProductController extends AbstractApiController
      *      )
      * @OA\Tag(name="Products")
      */
-    public function list(Request $request, PaginationFactory $paginationFactory)/*:Response*/
+    public function list(Request $request, PaginationFactory $paginationFactory, $page= null)/*:Response*/
     {
         $query = $this->productRepository->findAllQueryBuilder();
+        $page = $request->get('page');
+        if($page > 16){
+            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
+        }
 
         $paginatedCollection = $paginationFactory->createCollection($query, $request, 'products_list', [], 5);
         //\dd($paginatedCollection);
 
+       
         /*return new JsonResponse(
             $this->serializer->serialize($paginatedCollection,'json',["groups" =>"products:list"]),
             JsonResponse::HTTP_OK, [], true
@@ -76,7 +81,6 @@ class ProductController extends AbstractApiController
         );*/
         //$context = SerializationContext::create()->setGroups(array("product:list"));
         $jsonData = $this->serializer->serialize($paginatedCollection, 'json', SerializationContext::create()->setGroups(['products:list']));
-
         return new JsonResponse($jsonData, JsonResponse::HTTP_OK, [], true);
         //\dd($productsJson);
 
@@ -122,7 +126,7 @@ class ProductController extends AbstractApiController
         ]);
         if (!$product /*|| ($product instanceof Product)*/) {
             //throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
-            return $this->respond("Incorrect identifier or no product found with this identifier", Response::HTTP_NOT_FOUND);
+            return $this->respond(null, Response::HTTP_NOT_FOUND);
         }
         /*return new JsonResponse(
             $this->serializer->serialize($product, "json", SerializationContext::create()->setGroups(

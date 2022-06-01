@@ -264,7 +264,7 @@ class UserController extends AbstractApiController
             return $this->respond("You can't delete yourself", Response::HTTP_FORBIDDEN);
         }
         if(!$user){
-            return $this->respond("This user doesn't exit", Response::HTTP_NOT_FOUND);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
         // if user can't be deleted by the current user
         if (!$this->isGranted("ROLE_ADMIN", $user)) {
