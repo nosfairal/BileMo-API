@@ -135,7 +135,7 @@ class UserController extends AbstractApiController
      *             ),
      *             @OA\Property(
      *                 property="password",
-     *                 description="User's choosen password",
+     *                 description="User's choosen password, at least 6 characters",
      *                 type="string"
      *             ),
      *             @OA\Property(
@@ -158,7 +158,7 @@ class UserController extends AbstractApiController
      * )
      * @OA\Response(
      *     response=JsonResponse::HTTP_CREATED,
-     *     description="Create a user and returns it"
+     *     description="User created"
      * )
      * @OA\Response(
      *     response=JsonResponse::HTTP_BAD_REQUEST,
@@ -289,8 +289,8 @@ class UserController extends AbstractApiController
      *          example=1,
      *      )
      * @OA\Response(
-     *     response=JsonResponse::HTTP_OK,
-     *     description="Update a user and returns it"
+     *     response=JsonResponse::HTTP_ACCEPTED,
+     *     description="User updated"
      * )
      * @OA\Response(
      *     response=JsonResponse::HTTP_BAD_REQUEST,
@@ -317,7 +317,7 @@ class UserController extends AbstractApiController
      *             ),
      *             @OA\Property(
      *                 property="password",
-     *                 description="User's choosen password",
+     *                 description="User's choosen password, 6 caractères minimum",
      *                 type="string"
      *             ),
      *             @OA\Property(
