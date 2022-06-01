@@ -49,6 +49,10 @@ class ProductController extends AbstractApiController
      *     description="Returns the list of products",
      *     @Model(type=Product::class)
      * )
+     * @OA\Response(
+     *     response=JsonResponse::HTTP_NOT_FOUND,
+     *     description="The page you asked doesn't exist"
+     * )
      * @OA\Parameter(
      *          name="page",
      *          in="query",
@@ -126,7 +130,7 @@ class ProductController extends AbstractApiController
         ]);
         if (!$product /*|| ($product instanceof Product)*/) {
             //throw new JsonException("Incorrect identifier or no product found with this identifier", JsonResponse::HTTP_NOT_FOUND);
-            return $this->respond(null, Response::HTTP_NOT_FOUND);
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
         /*return new JsonResponse(
             $this->serializer->serialize($product, "json", SerializationContext::create()->setGroups(

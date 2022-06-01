@@ -102,14 +102,16 @@ class UserController extends AbstractApiController
         ]);
         $customer = $this->getUser()->getCustomer();
 
-        if ($user->getCustomer()->getId() !== $customer->getId()) {
-            return $this->respond("You don't have the rights to see this user's details", Response::HTTP_FORBIDDEN);
-        }
-
-        if (!$user) {
-            return $this->respond("This user doesn't exist", Response::HTTP_NOT_FOUND);
+        if (!$user || !$customer) {
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
             //throw new NotFoundHttpException("The user was not found");
         }
+
+        if ($user->getCustomer()->getId() !== $customer->getId()) {
+            return new JsonResponse("You don't have the rights to see this user's details", Response::HTTP_FORBIDDEN);
+        }
+
+        
         
         return new JsonResponse(
             $this->serializer->serialize($user,"json", SerializationContext::create()->setGroups(['user:details'])),
@@ -198,7 +200,7 @@ class UserController extends AbstractApiController
                 return $errors;
             }*/
         if (!$this->isGranted("ROLE_ADMIN", $user)) {
-            return $this->respond("Vous n'êtes pas autorisé à effectuer cette requête",Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse("Vous n'êtes pas autorisé à effectuer cette requête",Response::HTTP_UNAUTHORIZED);
         }
         $entityManager->persist($user);
         $entityManager->flush();
@@ -268,7 +270,7 @@ class UserController extends AbstractApiController
         }
         // if user can't be deleted by the current user
         if (!$this->isGranted("ROLE_ADMIN", $user)) {
-            return $this->respond("You don't have the rights to delete a user", Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse("You don't have the rights to delete a user", Response::HTTP_UNAUTHORIZED);
         }
         $entityManager->remove($user);
         $entityManager->flush();
